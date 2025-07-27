@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import React, { useState } from 'react';
 import { auth } from '../../firebase/firebase.config';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -12,6 +12,7 @@ const Register = () => {
         e.preventDefault()
         console.log(e);
         const email = e.target.email.value;
+        const name = e.target.name.value;
         const password = e.target.password.value
         const accepted = e.target.terms.checked
         if (password.length < 6) {
@@ -33,6 +34,16 @@ const Register = () => {
         createUserWithEmailAndPassword(auth, email, password)
             .then(result => {
                 console.log(result.user);
+                sendEmailVerification(result.user)
+                .then(() => {
+                    alert('Please Check you email for verify your account')
+                })
+                updateProfile(result.user, {
+                    displayName: name,
+                    photoURL: 'https://drive.google.com/file/d/17_xKae9SkY1MRZPcYb2H6oHOI992bZgi/view?usp=sharing'
+                })
+                .then( () => console.log('Profile updated'))
+                .catch()
                 setSuccess('User Created Successfully')
             })
             .catch(error => {
@@ -44,6 +55,7 @@ const Register = () => {
         <div className='mx-auto max-w-[1170px]'>
             <h2 className="text-3xl my-5 text-center">Please Register</h2>
             <form className='flex flex-col' onSubmit={handleRegister}>
+                <input className='py-3 px-4 my-3 w-1/2 mx-auto  shadow-xl' type="text" placeholder='Your name' name='name' required />
                 <input className='py-3 px-4 my-3 w-1/2 mx-auto  shadow-xl' type="email" placeholder='Email Address' name='email' required />
                 <div className='w-2/3 mx-auto flex justify-center items-center'>
                     <input

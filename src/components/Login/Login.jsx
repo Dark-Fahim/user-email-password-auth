@@ -7,6 +7,8 @@ const Login = () => {
     const [loginError, setLoginError] = useState('')
     const [successLogin, setSuccessLogin] = useState('')
     const emailRef = useRef(null)
+    const [photo, setPhoto] = useState('')
+    const [name, setName] = useState('')
 
 
     const handleLogin = e => {
@@ -15,11 +17,20 @@ const Login = () => {
         const password = e.target.password.value;
         console.log(email, password);
         setLoginError('')
+        setName('')
+        setPhoto('')
         setSuccessLogin('')
         signInWithEmailAndPassword(auth, email, password)
         .then(result => {
             console.log(result.user);
-            setSuccessLogin('Login Successful')
+            if(result.user.emailVerified){
+                setSuccessLogin('Login Successful')
+                setPhoto(result.user.photoURL)
+                setName(result.user.displayName)
+            }
+            else{
+                alert('Please First Verify Your email')
+            }
         })
         .catch(error => {
             console.log(error.message);
@@ -41,7 +52,7 @@ const Login = () => {
         // 
         sendPasswordResetEmail(auth, email)
         .then(result => {
-            console.log(`reset email sent`);
+            console.log(`reset email sent`, result);
         })
         .catch(err => {
             console.error(err.error);
@@ -54,10 +65,8 @@ const Login = () => {
         <div className="hero bg-base-200 min-h-screen">
             <div className="hero-content flex-col lg:flex-row-reverse">
                 <div className="text-center lg:text-left">
-                    <h1 className="text-5xl font-bold">Login now!</h1>
-                    <p className="py-6">
-                        Provident cupiditate voluptatem et
-                    </p>
+                    <h1 className="text-5xl font-bold">{name}</h1>
+                    <img className='my-6 w-2xs' src={photo} alt="" />
                 </div>
                 <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
                     <div className="card-body">
