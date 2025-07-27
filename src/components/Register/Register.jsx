@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import { auth } from '../../firebase/firebase.config';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 
 const Register = () => {
     const [regError, setRegError] = useState('')
@@ -62,6 +63,7 @@ const Register = () => {
                 </div>
                 <input className='btn py-3 px-4 my-3 w-1/2 mx-auto' type="submit" value="Register" />
             </form>
+            <p className='text-center'>Already Have an Account? Please <Link to={'/login'}>Login</Link></p>
             {
                 regError && <p className='text-red-500 font-bold text-center text-xl'>{regError}</p>
             }
