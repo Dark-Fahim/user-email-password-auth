@@ -1,11 +1,12 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import React, { useState } from 'react';
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useRef, useState } from 'react';
 import { auth } from '../../firebase/firebase.config';
 import { Link } from 'react-router-dom';
 
 const Login = () => {
     const [loginError, setLoginError] = useState('')
     const [successLogin, setSuccessLogin] = useState('')
+    const emailRef = useRef(null)
 
 
     const handleLogin = e => {
@@ -26,6 +27,27 @@ const Login = () => {
         })
     }
 
+    const handleForgetPassword = ()  => {
+        console.log('Forget password', emailRef.current.value);
+        const email = emailRef.current.value;
+        if(!email){
+            console.log('Please write a email');
+            return
+        }
+        else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+            console.log('Please write a valid email');
+            return
+        }
+        // 
+        sendPasswordResetEmail(auth, email)
+        .then(result => {
+            console.log(`reset email sent`);
+        })
+        .catch(err => {
+            console.error(err.error);
+            
+        })
+    }
 
 
     return (
@@ -42,10 +64,10 @@ const Login = () => {
                         <form onSubmit={handleLogin}>
                             <fieldset className="fieldset">
                                 <label className="label">Email</label>
-                                <input type="email" className="input" placeholder="Email" name="email" />
+                                <input ref={emailRef} type="email" className="input" placeholder="Email" name="email" />
                                 <label className="label">Password</label>
                                 <input type="password" className="input" placeholder="Password" name="password" />
-                                <div><a className="link link-hover">Forgot password?</a></div>
+                                <div><a onClick={handleForgetPassword} className="link link-hover">Forgot password?</a></div>
                                 <div>
                                     {
                                         loginError && <p className='text-red-500 font-bold text-center text-lg'>{loginError}</p>
